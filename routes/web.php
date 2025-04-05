@@ -1,16 +1,21 @@
 <?php
 
-use App\Http\Controllers\UserController;
-use App\Services\UserService;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use App\Services\ProductService;
-use App\Http\Controllers\Product;
+
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', ['name' => 'lausa-app']);
 });
+
+Route::get('/users', [UserController::class, 'index']);
+
+Route::resource('/products', ProductController::class);
 
 Route::get('/test-container', function (Request $request) {
     $input = $request->input('key');
@@ -39,15 +44,16 @@ Route::get('/search/{search}', function (string $search) {
     return $search;
 })->where('search', '.*');
 
+// Test Route
 Route::get('/test/route', function () {
-    return route('daniel-route');
-})->name('daniel-route');
+    return route('test-route');
+})->name('test-route');
 
+// Route -> Middleware Group
 Route::middleware(['user-middleware'])->group(function () {
     Route::get('route-middleware-group/first', function (Request $request) {
         echo 'first';
     });
-
     Route::get('route-middleware-group/second', function (Request $request) {
         echo 'second';
     });
@@ -67,11 +73,11 @@ Route::post('/token', function (Request $request) {
     return $request->all();
 });
 
-Route::get('users', [UserController::class, 'index'])->middleware('user-middleware');
+// Route::get('users', [UserController::class, 'index'])->middleware('user-middleware');
 
-Route::resource('products', Product::class);
+// Route::resource('products', Product::class);
 
-Route::get('/product-list', function (ProductService $productService) {
+/* Route::get('/product-list', function (ProductService $productService) {
     $data['products'] = $productService->listProducts();
     return view('products.list', $data);
-});
+}); */
